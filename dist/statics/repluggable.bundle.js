@@ -1,12 +1,12 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("_"), require("React"), require("ReactRedux"), require("Redux"));
+		module.exports = factory(require("_"), require("React"), require("Redux"), require("ReactRedux"));
 	else if(typeof define === 'function' && define.amd)
-		define("repluggable", ["_", "React", "ReactRedux", "Redux"], factory);
+		define("repluggable", ["_", "React", "Redux", "ReactRedux"], factory);
 	else if(typeof exports === 'object')
-		exports["repluggable"] = factory(require("_"), require("React"), require("ReactRedux"), require("Redux"));
+		exports["repluggable"] = factory(require("_"), require("React"), require("Redux"), require("ReactRedux"));
 	else
-		root["repluggable"] = factory(root["_"], root["React"], root["ReactRedux"], root["Redux"]);
+		root["repluggable"] = factory(root["_"], root["React"], root["Redux"], root["ReactRedux"]);
 })((typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__0__, __WEBPACK_EXTERNAL_MODULE__1__, __WEBPACK_EXTERNAL_MODULE__2__, __WEBPACK_EXTERNAL_MODULE__3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -120,11 +120,11 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__1__;
 
 /***/ }),
 /* 2 */
-/*!*****************************!*\
-  !*** external "ReactRedux" ***!
-  \*****************************/
+/*!************************!*\
+  !*** external "Redux" ***!
+  \************************/
 /*! no static exports found */
-/*! exports used: Provider, connect */
+/*! all exports used */
 /*! ModuleConcatenation bailout: Module is not an ECMAScript module */
 /***/ (function(module, exports) {
 
@@ -132,11 +132,11 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
 
 /***/ }),
 /* 3 */
-/*!************************!*\
-  !*** external "Redux" ***!
-  \************************/
+/*!*****************************!*\
+  !*** external "ReactRedux" ***!
+  \*****************************/
 /*! no static exports found */
-/*! all exports used */
+/*! exports used: Provider, connect */
 /*! ModuleConcatenation bailout: Module is not an ECMAScript module */
 /***/ (function(module, exports) {
 
@@ -155,7 +155,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__3__;
 "use strict";
 
 
-var compose = __webpack_require__(/*! redux */ 3).compose;
+var compose = __webpack_require__(/*! redux */ 2).compose;
 
 exports.__esModule = true;
 exports.composeWithDevTools =
@@ -255,7 +255,7 @@ var external_React_ = __webpack_require__(1);
 var external_React_default = /*#__PURE__*/__webpack_require__.n(external_React_);
 
 // EXTERNAL MODULE: external "ReactRedux"
-var external_ReactRedux_ = __webpack_require__(2);
+var external_ReactRedux_ = __webpack_require__(3);
 
 // CONCATENATED MODULE: ./extensionSlot.ts
 var __read = (undefined && undefined.__read) || function (o, n) {
@@ -392,7 +392,7 @@ var declaredAPIs = function (entryPoint) {
 };
 
 // EXTERNAL MODULE: external "Redux"
-var external_Redux_ = __webpack_require__(3);
+var external_Redux_ = __webpack_require__(2);
 
 // EXTERNAL MODULE: ../node_modules/redux-devtools-extension/index.js
 var redux_devtools_extension = __webpack_require__(4);
@@ -2575,6 +2575,27 @@ var throttledStore_assign = (undefined && undefined.__assign) || function () {
     };
     return throttledStore_assign.apply(this, arguments);
 };
+var throttledStore_read = (undefined && undefined.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var throttledStore_spreadArray = (undefined && undefined.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 
 
 
@@ -2675,12 +2696,14 @@ var createThrottledStore = function (host, contributedState, requestAnimationFra
         pendingBroadcastNotification = false;
         pendingObservableNotifications = undefined;
     };
-    console.log("console log from module!");
+    console.log("console log from module! 2");
     var epicMiddleware = createEpicMiddleware();
+    var enhancersDevTools = [Object(external_Redux_["applyMiddleware"])(epicMiddleware), Object(redux_devtools_extension["devToolsEnhancer"])({ name: "repluggable" })];
+    var enhancers = [Object(external_Redux_["applyMiddleware"])(epicMiddleware)];
     var reducer = buildStoreReducer(contributedState, onBroadcastNotify, onObservableNotify);
     var store = host.options.enableReduxDevtoolsExtension
-        ? Object(external_Redux_["createStore"])(reducer, Object(external_Redux_["applyMiddleware"])(epicMiddleware), Object(redux_devtools_extension["devToolsEnhancer"])({ name: "repluggable" }))
-        : Object(external_Redux_["createStore"])(reducer, Object(external_Redux_["applyMiddleware"])(epicMiddleware));
+        ? Object(external_Redux_["createStore"])(reducer, external_Redux_["compose"].apply(void 0, throttledStore_spreadArray([], throttledStore_read(enhancersDevTools))))
+        : Object(external_Redux_["createStore"])(reducer, external_Redux_["compose"].apply(void 0, throttledStore_spreadArray([], throttledStore_read(enhancers))));
     var invoke = function (f) { return f(); };
     var broadcastSubscribers = [];
     var subscribe = function (subscriber) {

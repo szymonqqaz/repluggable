@@ -10,6 +10,27 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -116,12 +137,14 @@ var createThrottledStore = function (host, contributedState, requestAnimationFra
         pendingBroadcastNotification = false;
         pendingObservableNotifications = undefined;
     };
-    console.log("console log from module!");
+    console.log("console log from module! 2");
     var epicMiddleware = redux_observable_1.createEpicMiddleware();
+    var enhancersDevTools = [redux_1.applyMiddleware(epicMiddleware), redux_devtools_extension_1.devToolsEnhancer({ name: "repluggable" })];
+    var enhancers = [redux_1.applyMiddleware(epicMiddleware)];
     var reducer = buildStoreReducer(contributedState, onBroadcastNotify, onObservableNotify);
     var store = host.options.enableReduxDevtoolsExtension
-        ? redux_1.createStore(reducer, redux_1.applyMiddleware(epicMiddleware), redux_devtools_extension_1.devToolsEnhancer({ name: "repluggable" }))
-        : redux_1.createStore(reducer, redux_1.applyMiddleware(epicMiddleware));
+        ? redux_1.createStore(reducer, redux_1.compose.apply(void 0, __spreadArray([], __read(enhancersDevTools))))
+        : redux_1.createStore(reducer, redux_1.compose.apply(void 0, __spreadArray([], __read(enhancers))));
     var invoke = function (f) { return f(); };
     var broadcastSubscribers = [];
     var subscribe = function (subscriber) {

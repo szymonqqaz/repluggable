@@ -9,7 +9,28 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import { createStore, combineReducers, applyMiddleware, } from "redux";
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
 import _ from "lodash";
 import { contributeInstalledShellsState } from "./installedShellsState";
@@ -109,12 +130,14 @@ export var createThrottledStore = function (host, contributedState, requestAnima
         pendingBroadcastNotification = false;
         pendingObservableNotifications = undefined;
     };
-    console.log("console log from module!");
+    console.log("console log from module! 2");
     var epicMiddleware = createEpicMiddleware();
+    var enhancersDevTools = [applyMiddleware(epicMiddleware), devToolsEnhancer({ name: "repluggable" })];
+    var enhancers = [applyMiddleware(epicMiddleware)];
     var reducer = buildStoreReducer(contributedState, onBroadcastNotify, onObservableNotify);
     var store = host.options.enableReduxDevtoolsExtension
-        ? createStore(reducer, applyMiddleware(epicMiddleware), devToolsEnhancer({ name: "repluggable" }))
-        : createStore(reducer, applyMiddleware(epicMiddleware));
+        ? createStore(reducer, compose.apply(void 0, __spreadArray([], __read(enhancersDevTools))))
+        : createStore(reducer, compose.apply(void 0, __spreadArray([], __read(enhancers))));
     var invoke = function (f) { return f(); };
     var broadcastSubscribers = [];
     var subscribe = function (subscriber) {

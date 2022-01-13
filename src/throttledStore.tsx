@@ -7,6 +7,7 @@ import {
   AnyAction,
   Dispatch,
   applyMiddleware,
+  compose
 } from "redux";
 import { devToolsEnhancer } from "redux-devtools-extension";
 import { AppHostServicesProvider } from "./appHostServices";
@@ -198,9 +199,12 @@ export const createThrottledStore = (
     pendingObservableNotifications = undefined;
   };
 
-  console.log("console log from module!");
+  console.log("console log from module! 2");
 
   const epicMiddleware = createEpicMiddleware();
+
+  const enhancersDevTools = [applyMiddleware(epicMiddleware), devToolsEnhancer({ name: "repluggable" })];
+  const enhancers = [applyMiddleware(epicMiddleware)];
 
   const reducer = buildStoreReducer(
     contributedState,
@@ -210,10 +214,9 @@ export const createThrottledStore = (
   const store: Store = host.options.enableReduxDevtoolsExtension
     ? createStore(
         reducer,
-        applyMiddleware(epicMiddleware),
-        devToolsEnhancer({ name: "repluggable" })
+        compose(...enhancersDevTools)
       )
-    : createStore(reducer, applyMiddleware(epicMiddleware));
+    : createStore(reducer, compose(...enhancers));
   const invoke = (f: Subscriber) => f();
 
   let broadcastSubscribers: Subscriber[] = [];

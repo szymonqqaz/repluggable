@@ -24,7 +24,7 @@ import {
 import { contributeInstalledShellsState } from "./installedShellsState";
 import { interceptAnyObject } from "./interceptAnyObject";
 import { invokeSlotCallbacks } from "./invokeSlotCallbacks";
-import { createEpicMiddleware } from "redux-observable";
+import { createEpicMiddleware, combineEpics } from "redux-observable";
 
 type ReducerNotificationScope = "broadcasting" | "observable";
 interface ShellsReducersMap {
@@ -199,9 +199,26 @@ export const createThrottledStore = (
     pendingObservableNotifications = undefined;
   };
 
-  console.log("console log from module! 2");
+  console.log("console log from module! 3");
 
-  const epicMiddleware = createEpicMiddleware();
+//   let epicMiddleware;
+
+const epicMiddleware = createEpicMiddleware();
+
+//   if(host.options.epics){
+//     const rootEpic = combineEpics(...host.options.epics);   
+//     epicMiddleware = createEpicMiddleware(rootEpic);
+//   } else {
+//     epicMiddleware = createEpicMiddleware();
+//   };
+
+
+//   if(host.options.epics){
+//     epicMiddleware  = createEpicMiddleware(...host.options.epics);
+//   } else {
+//     epicMiddleware  = createEpicMiddleware(); 
+//   }
+
 
   const enhancersDevTools = [applyMiddleware(epicMiddleware), devToolsEnhancer({ name: "repluggable" })];
   const enhancers = [applyMiddleware(epicMiddleware)];
@@ -217,6 +234,15 @@ export const createThrottledStore = (
         compose(...enhancersDevTools)
       )
     : createStore(reducer, compose(...enhancers));
+
+    if(host.options.epics){
+        const rootEpic = combineEpics(...host.options.epics);   
+        epicMiddleware.run(rootEpic);
+      }
+
+    
+
+
   const invoke = (f: Subscriber) => f();
 
   let broadcastSubscribers: Subscriber[] = [];

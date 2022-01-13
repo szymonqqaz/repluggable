@@ -143,7 +143,8 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
 module.exports = __WEBPACK_EXTERNAL_MODULE__3__;
 
 /***/ }),
-/* 4 */
+/* 4 */,
+/* 5 */
 /*!*********************************************************!*\
   !*** ../node_modules/redux-devtools-extension/index.js ***!
   \*********************************************************/
@@ -178,10 +179,9 @@ exports.devToolsEnhancer =
 
 
 /***/ }),
-/* 5 */,
 /* 6 */
 /*!*******************************!*\
-  !*** ./index.ts + 80 modules ***!
+  !*** ./index.ts + 86 modules ***!
   \*******************************/
 /*! exports provided: AppHostAPI, AppMainView, createAppHost, makeLazyEntryPoint, mainViewSlotKey, stateSlotKey, SlotRenderer, ShellRenderer, invokeSlotCallbacks, connectWithShell, mapObservablesToSelectors, observeWithShell, connectWithShellAndObserve, ErrorBoundary, interceptEntryPoints, interceptEntryPointsMap, interceptAnyObject, monitorAPI, hot */
 /*! all exports used */
@@ -395,7 +395,7 @@ var declaredAPIs = function (entryPoint) {
 var external_Redux_ = __webpack_require__(2);
 
 // EXTERNAL MODULE: ../node_modules/redux-devtools-extension/index.js
-var redux_devtools_extension = __webpack_require__(4);
+var redux_devtools_extension = __webpack_require__(5);
 
 // CONCATENATED MODULE: ./interceptAnyObject.ts
 
@@ -2563,6 +2563,105 @@ function createEpicMiddleware(options) {
     return epicMiddleware;
 }
 
+// CONCATENATED MODULE: ../node_modules/rxjs/dist/esm5/internal/operators/mergeAll.js
+
+
+function mergeAll(concurrent) {
+    if (concurrent === void 0) { concurrent = Infinity; }
+    return mergeMap(identity, concurrent);
+}
+//# sourceMappingURL=mergeAll.js.map
+// CONCATENATED MODULE: ../node_modules/rxjs/dist/esm5/internal/observable/empty.js
+
+var EMPTY = new Observable_Observable(function (subscriber) { return subscriber.complete(); });
+function empty(scheduler) {
+    return scheduler ? emptyScheduled(scheduler) : EMPTY;
+}
+function emptyScheduled(scheduler) {
+    return new Observable_Observable(function (subscriber) { return scheduler.schedule(function () { return subscriber.complete(); }); });
+}
+//# sourceMappingURL=empty.js.map
+// CONCATENATED MODULE: ../node_modules/rxjs/dist/esm5/internal/util/isScheduler.js
+
+function isScheduler(value) {
+    return value && isFunction(value.schedule);
+}
+//# sourceMappingURL=isScheduler.js.map
+// CONCATENATED MODULE: ../node_modules/rxjs/dist/esm5/internal/util/args.js
+
+
+function last(arr) {
+    return arr[arr.length - 1];
+}
+function popResultSelector(args) {
+    return isFunction(last(args)) ? args.pop() : undefined;
+}
+function popScheduler(args) {
+    return isScheduler(last(args)) ? args.pop() : undefined;
+}
+function popNumber(args, defaultValue) {
+    return typeof last(args) === 'number' ? args.pop() : defaultValue;
+}
+//# sourceMappingURL=args.js.map
+// CONCATENATED MODULE: ../node_modules/rxjs/dist/esm5/internal/observable/merge.js
+
+
+
+
+
+function merge() {
+    var args = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+    }
+    var scheduler = popScheduler(args);
+    var concurrent = popNumber(args, Infinity);
+    var sources = args;
+    return !sources.length
+        ?
+            EMPTY
+        : sources.length === 1
+            ?
+                innerFrom(sources[0])
+            :
+                mergeAll(concurrent)(from(sources, scheduler));
+}
+//# sourceMappingURL=merge.js.map
+// CONCATENATED MODULE: ../node_modules/redux-observable/dist/esm/combineEpics.js
+
+/**
+  Merges all epics into a single one.
+ */
+function combineEpics() {
+    var epics = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        epics[_i] = arguments[_i];
+    }
+    var merger = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        return merge.apply(void 0, epics.map(function (epic) {
+            var output$ = epic.apply(void 0, args);
+            if (!output$) {
+                throw new TypeError("combineEpics: one of the provided Epics \"" + (epic.name || '<anonymous>') + "\" does not return a stream. Double check you're not missing a return statement!");
+            }
+            return output$;
+        }));
+    };
+    // Technically the `name` property on Function's are supposed to be read-only.
+    // While some JS runtimes allow it anyway (so this is useful in debugging)
+    // some actually throw an exception when you attempt to do so.
+    try {
+        Object.defineProperty(merger, 'name', {
+            value: "combineEpics(" + epics.map(function (epic) { return epic.name || '<anonymous>'; }).join(', ') + ")",
+        });
+    }
+    catch (e) { }
+    return merger;
+}
+
 // CONCATENATED MODULE: ./throttledStore.tsx
 var throttledStore_assign = (undefined && undefined.__assign) || function () {
     throttledStore_assign = Object.assign || function(t) {
@@ -2696,14 +2795,30 @@ var createThrottledStore = function (host, contributedState, requestAnimationFra
         pendingBroadcastNotification = false;
         pendingObservableNotifications = undefined;
     };
-    console.log("console log from module! 2");
+    console.log("console log from module! 3");
+    //   let epicMiddleware;
     var epicMiddleware = createEpicMiddleware();
+    //   if(host.options.epics){
+    //     const rootEpic = combineEpics(...host.options.epics);   
+    //     epicMiddleware = createEpicMiddleware(rootEpic);
+    //   } else {
+    //     epicMiddleware = createEpicMiddleware();
+    //   };
+    //   if(host.options.epics){
+    //     epicMiddleware  = createEpicMiddleware(...host.options.epics);
+    //   } else {
+    //     epicMiddleware  = createEpicMiddleware(); 
+    //   }
     var enhancersDevTools = [Object(external_Redux_["applyMiddleware"])(epicMiddleware), Object(redux_devtools_extension["devToolsEnhancer"])({ name: "repluggable" })];
     var enhancers = [Object(external_Redux_["applyMiddleware"])(epicMiddleware)];
     var reducer = buildStoreReducer(contributedState, onBroadcastNotify, onObservableNotify);
     var store = host.options.enableReduxDevtoolsExtension
         ? Object(external_Redux_["createStore"])(reducer, external_Redux_["compose"].apply(void 0, throttledStore_spreadArray([], throttledStore_read(enhancersDevTools))))
         : Object(external_Redux_["createStore"])(reducer, external_Redux_["compose"].apply(void 0, throttledStore_spreadArray([], throttledStore_read(enhancers))));
+    if (host.options.epics) {
+        var rootEpic = combineEpics.apply(void 0, throttledStore_spreadArray([], throttledStore_read(host.options.epics)));
+        epicMiddleware.run(rootEpic);
+    }
     var invoke = function (f) { return f(); };
     var broadcastSubscribers = [];
     var subscribe = function (subscriber) {

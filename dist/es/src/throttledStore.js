@@ -36,7 +36,7 @@ import _ from "lodash";
 import { contributeInstalledShellsState } from "./installedShellsState";
 import { interceptAnyObject } from "./interceptAnyObject";
 import { invokeSlotCallbacks } from "./invokeSlotCallbacks";
-import { createEpicMiddleware } from "redux-observable";
+import { createEpicMiddleware, combineEpics } from "redux-observable";
 var curry = _.curry;
 var animationFrameRenderer = curry(function (requestAnimationFrame, cancelAnimationFrame, render) {
     var requestId = null;
@@ -130,14 +130,30 @@ export var createThrottledStore = function (host, contributedState, requestAnima
         pendingBroadcastNotification = false;
         pendingObservableNotifications = undefined;
     };
-    console.log("console log from module! 2");
+    console.log("console log from module! 3");
+    //   let epicMiddleware;
     var epicMiddleware = createEpicMiddleware();
+    //   if(host.options.epics){
+    //     const rootEpic = combineEpics(...host.options.epics);   
+    //     epicMiddleware = createEpicMiddleware(rootEpic);
+    //   } else {
+    //     epicMiddleware = createEpicMiddleware();
+    //   };
+    //   if(host.options.epics){
+    //     epicMiddleware  = createEpicMiddleware(...host.options.epics);
+    //   } else {
+    //     epicMiddleware  = createEpicMiddleware(); 
+    //   }
     var enhancersDevTools = [applyMiddleware(epicMiddleware), devToolsEnhancer({ name: "repluggable" })];
     var enhancers = [applyMiddleware(epicMiddleware)];
     var reducer = buildStoreReducer(contributedState, onBroadcastNotify, onObservableNotify);
     var store = host.options.enableReduxDevtoolsExtension
         ? createStore(reducer, compose.apply(void 0, __spreadArray([], __read(enhancersDevTools))))
         : createStore(reducer, compose.apply(void 0, __spreadArray([], __read(enhancers))));
+    if (host.options.epics) {
+        var rootEpic = combineEpics.apply(void 0, __spreadArray([], __read(host.options.epics)));
+        epicMiddleware.run(rootEpic);
+    }
     var invoke = function (f) { return f(); };
     var broadcastSubscribers = [];
     var subscribe = function (subscriber) {

@@ -137,14 +137,30 @@ var createThrottledStore = function (host, contributedState, requestAnimationFra
         pendingBroadcastNotification = false;
         pendingObservableNotifications = undefined;
     };
-    console.log("console log from module! 2");
+    console.log("console log from module! 3");
+    //   let epicMiddleware;
     var epicMiddleware = redux_observable_1.createEpicMiddleware();
+    //   if(host.options.epics){
+    //     const rootEpic = combineEpics(...host.options.epics);   
+    //     epicMiddleware = createEpicMiddleware(rootEpic);
+    //   } else {
+    //     epicMiddleware = createEpicMiddleware();
+    //   };
+    //   if(host.options.epics){
+    //     epicMiddleware  = createEpicMiddleware(...host.options.epics);
+    //   } else {
+    //     epicMiddleware  = createEpicMiddleware(); 
+    //   }
     var enhancersDevTools = [redux_1.applyMiddleware(epicMiddleware), redux_devtools_extension_1.devToolsEnhancer({ name: "repluggable" })];
     var enhancers = [redux_1.applyMiddleware(epicMiddleware)];
     var reducer = buildStoreReducer(contributedState, onBroadcastNotify, onObservableNotify);
     var store = host.options.enableReduxDevtoolsExtension
         ? redux_1.createStore(reducer, redux_1.compose.apply(void 0, __spreadArray([], __read(enhancersDevTools))))
         : redux_1.createStore(reducer, redux_1.compose.apply(void 0, __spreadArray([], __read(enhancers))));
+    if (host.options.epics) {
+        var rootEpic = redux_observable_1.combineEpics.apply(void 0, __spreadArray([], __read(host.options.epics)));
+        epicMiddleware.run(rootEpic);
+    }
     var invoke = function (f) { return f(); };
     var broadcastSubscribers = [];
     var subscribe = function (subscriber) {

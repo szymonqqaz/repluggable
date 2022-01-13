@@ -38,7 +38,8 @@
     "react-dom": "^16.14.0",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
-    "redux-devtools-extension": "^2.13.8"
+    "redux-devtools-extension": "^2.13.8",
+    "redux-observable": "^2.0.0"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.7",
@@ -74,15 +75,5 @@
   },
   "resolutions": {
     "@types/react": "^16.9.53"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "(src|test|testKit)/**/*.{ts,tsx}": [
-      "tslint --project ."
-    ]
   }
 }
